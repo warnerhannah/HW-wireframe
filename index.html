@@ -1,54 +1,424 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Easier Layout</title>
+
+<head>
+    <title>List Query Demo</title>
     <link rel="stylesheet" href="./style.css">
-  </head>
-  <body>
-    <!-- HEADER --> 
-    <div id="header">
-        <header>
-                <h1>Header</h1>
-        </header>
-    </div>
-    
-    <!--NAV-->
-    <div id="nav">
-        <nav>
-            Navigation
-        </nav>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+</head>
+
+<body>
+
+    <div>
+        <h1>OPTX List Query Testing</h1>
     </div>
 
-    <div id="middle">
-        <!--SECTION-->
-        <div id="section">
-            <section>
-                <h1>Section</h1>
-                <div id="article">
-                    <article>
-                        <h1 id="title">Article</h1>
-                        <p>Headers</p>
-                        <p> Paragraphs</p>
-                    </article>     
-                </div>  
-            </section>
+    <!-- <div class="flex"> -->
+        <div id="new">NEW QUERY</div>
+        <!-- <button onClick="restartQuery();">Start Over</button> -->
+    <!-- </div> -->
+
+    <div class="space"></div>
+
+    <div>
+        <div class="yellow">
+            CURRENT QUERY
+        </div>
+        <div id="currentquery">
+            <p class="empty">Your query is currently empty. </p>
+            <p class="empty">Please add a metric, date range, or filter from below.</p>
+            <div id="queryDiv" class="flex">
+                <div class="padding">
+                    <div id="query0" class="query">
+                    </div>
+                    <div class="andDiv">
+                        <button class="and" id="and" onClick="add(0)">+ AND</button>
+                    </div>
+                    <div id="andInP0" class="andInP">
+                        <p class="inProgress">AND</p>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="orDiv">
+                    <button id="or" onClick="or()">+ OR</button>
+                </div>
+                <div class="orInP">
+                    <p class="inProgress">OR</p>
+                </div>
+            </div>
+
         </div>
 
-            <!--ASIDE-->
-        <div id="aside">
-            <aside>
-                <h1>Aside</h1>
-            </aside>
+    </div>
+
+    <div class="space"></div>
+
+
+    <div class="flex adds">
+        <div class="half leftcolumn">
+            <div class="grey">
+                ADD METRIC
+            </div>
+            <div class="container">
+                <div class="flex">
+                    <p>Enter Metric:</p><input id="metricName" />
+                </div>
+                <div class="flex">
+                    <input type="radio" name="condition" value="GE">
+                    <span class="GE">Greater than or Equal to $</span></input>
+                    <input id="GE"></input>
+                </div>
+                <div class="flex">
+                    <input type="radio" name="condition" value="LT">
+                    <span class="LT">Less than or Equal to $</span><input id="LT"></input></input><br />
+                </div>
+                <div class="flex">
+                    <input type="radio" name="condition" value="B">
+                    <span class="B">Between $</span> <input id="B"></input><span class="B2">and $</span><input
+                        id="B2"></input></input><br />
+                </div>
+                <div class="flex">
+                    <input type="radio" name="condition" value="inc">
+                    <span class="inc">Increase by </span><input id="inc"></input><span class="inc2">% since</span><input
+                        id="inc2"></input></input><br />
+                </div>
+                <div class="flex">
+                    <input type="radio" name="condition" value="dec">
+                    <span class="dec">Decrease by </span><input id="dec"></input><span class="dec2">% since</span><input
+                        id="dec2"></input></input><br />
+                </div>
+
+
+                <Button id="addMetric" onClick="addNew('Metric');">Add</Button>
+            </div>
+        </div>
+
+        <div class="half">
+            <div>
+                <div class="grey">
+                    ADD DATE(S)
+                </div>
+                <div class="container">
+                    <p>Date Picker</p>
+                    <p>or</p>
+                    <p><input id="startDate"></input> to <input id="endDate"></input></p>
+                    <Button id="addDate" onClick="addNew('Date');">Add</Button>
+                </div>
+            </div>
+
+            <div>
+                <div class="grey">
+                    ADD EXCLUSION
+                </div>
+                <div class="container">
+                    <input type="radio" name="exclusion" value="DNI">DNI</input><br />
+                    <input type="radio" name="exclusion" value="Banned">Banned</input><br />
+                    <input type="radio" name="exclusion" value="Do Not Contact">Do Not Contact</input><br />
+                    <Button id="addExclusion" onClick="addNew('Exclusion');">Add</Button>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <!--FOOTER-->
+    <div class="adds">
+        <div class="grey">
+            ADD FILTERS
+        </div>
+        <div class="container">
+            <input type="radio" name="filter" value="City">City <span class="selected" id="includeCity" value="City"
+                onClick="selectInclusion('#includeCity', '#excludeCity')">Include</span> | <span class="notselected"
+                id="excludeCity" onClick="selectInclusion('#excludeCity', '#includeCity')" value="City">Exclude</span>
+            <input id="City"></input></input><br />
+            <input type="radio" name="filter" value="ZipCode">Zip Code <span class="selected" id="includeZip"
+                onClick="selectInclusion('#includeZip', '#excludeZip')" value="ZipCode">Include</span> | <span
+                class="notselected" id="excludeZip" onClick="selectInclusion('#excludeZip', '#includeZip')"
+                id="ZipCode">Exclude</span>
+            <input id="ZipCode"></input></input><br />
+            <input type="radio" name="filter" value="State">State <span class="selected" id="includeState"
+                onClick="selectInclusion('#includeState', '#excludeState')" value="State">Include</span> | <span
+                class="notselected" id="excludeState" onClick="selectInclusion('#excludeState', '#includeState')"
+                value="State">Exclude</span>
+            <input id="State"></input></input><br />
+            <input type="radio" name="filter" value="BirthdayMonth">Birthday Month <span class="selected"
+                id="includeMonth" onClick="selectInclusion('#includeMonth', '#excludeMonth')"
+                value="BirthdayMonth">Include</span> | <span class="notselected" id="excludeMonth"
+                onClick="selectInclusion('#excludeMonth', '#includeMonth')" value="BirthdayMonth">Exclude</span>
+            <input id="BirthdayMonth"></input></input><br />
+            <input type="radio" name="filter" value="Host">Host <span class="selected" id="includeHost"
+                onClick="selectInclusion('#includeHost', '#excludeHost')" value="Host">Include</span> | <span
+                class="notselected" id="excludeHost" onClick="selectInclusion('#excludeHost', '#includeHost')"
+                value="Host">Exclude</span>
+            <input id="Host"></input></input><br />
+            <input type="radio" name="filter" value="CodeType">Code Type <span class="selected" id="includeCode"
+                onClick="selectInclusion('#includeCode', '#excludeCode')" value="CodeType">Include</span> | <span
+                class="notselected" id="excludeCode" onClick="selectInclusion('#excludeCode', '#includeCode')"
+                value="CodeType">Exclude</span>
+            <input id="CodeType"></input></input><br />
+            <input type="radio" name="filter" value="Traits">Traits <span class="selected" id="includeTrait"
+                onClick="selectInclusion('#includeTrait', '#excludeTrait')" value="Traits">Include</span> | <span
+                class="notselected" id="excludeTrait" onClick="selectInclusion('#excludeTrait', '#includeTrait')"
+                value="Traits">Exclude</span>
+            <input id="Traits"></input></input><br />
+            <input type="radio" name="filter" value="Preferences">Preferences <span class="selected" id="includePref"
+                onClick="selectInclusion('#includePref', '#excludePref')" value="Preferences">Include</span> | <span
+                class="notselected" id="excludePref" onClick="selectInclusion('#excludePref', '#includePref')"
+                value="Preferences">Exclude</span>
+            <input id="Preferences"></input></input><br />
+
+            <input type="radio" name="filter" value="Market">Market
+            <span class="selected" id="includeMkt" onClick="selectInclusion('#includeMkt', '#excludeMkt')"
+                value="Market">Include</span>
+            |
+            <span class="notselected" id="excludeMkt" onClick="selectInclusion('#excludeMkt', '#includeMkt')"
+                value="Market">Exclude</span>
+            <input id="Market"></input>
+            </input>
+            <br />
+            <input type="radio" name="filter" value="TierStatus">Tier Status <span class="selected" id="includeTier"
+                onClick="selectInclusion('#includeTier', '#excludeTier')" value="TierStatus">Include</span> | <span
+                class="notselected" id="excludeTier" onClick="selectInclusion('#excludeTier', '#includeTier')"
+                value="Tier Status">Exclude</span>
+            <input id="TierStatus"></input></input><br />
+            <input type="radio" name="filter" value="Flags">Flags <span class="selected" id="includeFlags"
+                onClick="selectInclusion('#includeFlags', '#excludeFlags')" value="Flags">Include</span> | <span
+                class="notselected" id="excludeFlags" onClick="selectInclusion('#excludeFlags', '#includeFlags')"
+                value="Flags">Exclude</span>
+            <input id="Flags"></input></input><br />
+            <input type="radio" name="filter" value="DMSegment">DM Segment <span class="selected" id="includeDM"
+                onClick="selectInclusion('#includeDM', '#excludeDM')" value="DMSegment">Include</span> | <span
+                class="notselected" id="excludeDM" onClick="selectInclusion('#excludeDM', '#includeDM')"
+                value="DMSegment">Exclude</span>
+            <input id="DMSegment"></input></input><br />
+
+            <Button id="addFilter" onClick="addNew('filter');">Add</Button>
+        </div>
+    </div>
+
+
+
     <div id="footer">
         <footer>
-            Footer
+            This is for testing purposes only.
         </footer>
     </div>
-    
-  </body>
-</html>
 
+</body>
+
+<script>
+    var query0 = [];
+
+    var queryNumber = 0;
+    var currentQuery = "query" + queryNumber
+
+    var nextQ = 0;
+    var nextQuery = "query" + nextQ
+
+
+    function hideStart() {
+        ($(".empty").hide());
+        ($(".andDiv").show());
+        ($(".orDiv").show());
+    }
+
+    function disableButtons() {
+        $("#addFilter").addClass("buttonDisabled");
+        $("#addMetric").addClass("buttonDisabled");
+        $("#addDate").addClass("buttonDisabled");
+        $("#addExclusion").addClass("buttonDisabled")
+        $(".andDiv").show();
+        $(".orDiv").show();
+        $("#andInP" + queryNumber).hide();
+        $(".orInP").hide();
+        $(".adds").hide()
+    }
+
+    function enableButtons() {
+        $("#addFilter").removeClass("buttonDisabled");
+        $("#addMetric").removeClass("buttonDisabled");
+        $("#addDate").removeClass("buttonDisabled");
+        $("#addExclusion").removeClass("buttonDisabled");
+        $(".andDiv").hide();
+        $(".adds").show();
+    }
+
+    function add(queryNum) {
+        queryNumber = queryNum;
+
+        enableButtons();
+
+        $(".orDiv" + queryNumber).hide();
+        $("#andInP" + queryNumber).show();
+    }
+
+    function or() {
+        nextQ += 1
+        queryNumber = nextQ;
+        console.log(queryNumber)
+
+        enableButtons();
+
+        $(".orDiv").hide();
+        $(".orInP").show();
+
+        createNewQuery()
+    }
+
+    function createNewQuery() {
+        var id = "query" + queryNumber
+        $("#queryDiv").append(
+            "<div class='padding'> <div id=" + id + " class='query'></div> <div class='andDiv'> <button class='and' id='and' onclick='add(" + queryNumber + ")'> + AND </button> <div class='andInP' id='andInP" + queryNumber + "'> <p class='inProgress'>AND</p> </div> </div> <div>"
+        )
+    }
+
+
+    function createQuery() {
+        hideStart();
+        $("#query" + queryNumber).empty();
+        console.log(query0[0].query)
+        console.log(queryNumber)
+        for (var i = 0; i < query0.length; i++) {
+            if (query0[i].query == queryNumber) {
+                $("#query" + queryNumber).append("<li>" + query0[i].value + "</li>")
+            }
+        }
+        disableButtons();
+    }
+
+
+
+    function selectInclusion(first, second) {
+        $(second).removeClass("selected")
+        $(second).addClass("notselected")
+        $(first).addClass("selected")
+        $(first).removeClass("notselected")
+
+    }
+
+    function addNew(type) {
+        if (type == "filter") {
+            addFilter();
+        }
+        else if (type == "Metric") {
+            addMetric();
+        }
+        else if (type == "Exclusion") {
+            addExclusion();
+        }
+        else if (type == "Date") {
+            addDate();
+        }
+        else {
+            alert("Not a valid input!")
+        }
+    }
+
+    // function restartQuery() {
+    //     query0 = [];
+    //     queryNumber = 0;
+    //     nextQ = 0
+
+    //     ($(".empty").show());
+    //     ($(".andDiv").show());
+    //     ($(".orDiv").show());
+
+    //     for (var i=0;i++;i<nextQ.length) {
+    //         $("#query" + nextQ).empty();
+    //     }
+
+    //     createQuery();
+    // }
+
+    function addExclusion() {
+        query0.push({ query: queryNumber, value: "Exclude " + $("input[name=exclusion]:checked").val() })
+        $("input[name=exclusion]").prop("checked", false)
+
+        console.log(query0)
+
+        createQuery();
+    }
+
+    function addFilter() {
+        var filter = "";
+        value = ($("input[name=filter]:checked").val())
+        search = "#" + value
+        filter += (value + " ")
+        filter += ($("span.selected[value=" + value + "]").text() + " ")
+        filter += ($("#" + value).val() + " ")
+
+        query0.push({ query: queryNumber, value: filter })
+        $("input[name=filter]").prop("checked", false)
+        $("#" + value).val("")
+
+        createQuery();
+    }
+
+    function addDate() {
+        var dates = "";
+        dates += ($("#startDate").val());
+        dates += (" to ");
+        dates += ($("#endDate").val());
+
+        query0.push({ query: queryNumber, value: dates })
+        $("#startDate").val("")
+        $("#endDate").val("")
+
+        createQuery();
+    }
+
+    function addMetric() {
+        var metric = "";
+        var currQ = "query" + queryNumber
+        console.log(currQ)
+        value = ($("input[name=condition]:checked").val())
+        search = "#" + value
+        metric += ($("#metricName").val() + " is ")
+        $("#metricName").val("")
+
+        if (value == "GE" || value == "LT") {
+            metric += ($("span." + value).text())
+            metric += ($("#" + value).val())
+
+            $("#" + value).val("")
+        }
+
+        else if (value == "B") {
+            metric += ($("span." + value).text())
+            metric += ($("#" + value).val())
+
+            var newValue = value + "2"
+            metric += " "
+            metric += ($("span." + newValue).text())
+
+            metric += ($("#" + newValue).val())
+
+            $("#" + value).val("")
+            $("#" + newValue).val("")
+        }
+
+        else {
+            metric += ($("span." + value).text())
+            metric += ($("#" + value).val())
+
+            var newValue = value + "2"
+            metric += ($("span." + newValue).text())
+            metric += " "
+
+            metric += ($("#" + newValue).val())
+
+            $("#" + value).val("")
+            $("#" + newValue).val("")
+        }
+
+
+        query0.push({ query: queryNumber, value: metric })
+        $("input[name=condition]").prop("checked", false)
+
+        createQuery();
+
+    }
+</script>
+
+</html>
